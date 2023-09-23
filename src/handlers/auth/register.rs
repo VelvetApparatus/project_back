@@ -14,7 +14,7 @@ pub struct RegistrationData {
     pub password: String,
 }
 
-pub async fn post_invitation(
+pub async fn reg(
     invitation_data: Json<RegistrationData>,
     pool: Data<PgPool>
 ) -> HttpResponse {

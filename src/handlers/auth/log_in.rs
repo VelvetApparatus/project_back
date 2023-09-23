@@ -15,7 +15,7 @@ pub struct AuthorizationData {
 }
 
 
-pub async fn simple_log_in(
+pub async fn log_in(
     req: Json<Option<AuthorizationData>>,
     pool: Data<PgPool>,
     id: Identity
