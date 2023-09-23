@@ -1,14 +1,18 @@
 use std::env;
 
+use actix_cors::Cors;
 use actix_web::{HttpServer, App, middleware::Logger, web::{self, Data}};
 use dotenvy::dotenv;
 use sqlx::postgres::PgPoolOptions;
 
 
+// Project modules 
+// ----------------------------------------------------------------
 pub mod routes;
 pub mod models;
 pub mod handlers;
 pub mod utils;
+// ----------------------------------------------------------------
 
 
 #[actix_rt::main]
@@ -24,6 +28,10 @@ async fn main() -> Result<(), std::io::Error>{
     
     let database_url = env::var("DATABASE_URL")
         .expect("DATABASE_URL must be set");
+
+
+    let allowed_origin = env::var("ALLOWED_ORIGIN")
+        .expect("ALLOWED_ORIGIN must be set");
 
     
     let pool = PgPoolOptions::new()
@@ -47,17 +55,15 @@ async fn main() -> Result<(), std::io::Error>{
             .wrap(Logger::default())
 
             // CORS 
-            // .wrap(
-            //     Cors::default()
-            //         .allow_any_origin()
-            //         // .allowed_origin("http://localhost:5175")
-            //         // .allowed_origin("http://localhost:5173")
-            //         // .allowed_origin("http://localhost:4173")
-            //         .allow_any_header()
-            //         .allowed_methods(vec!["GET", "POST", "DELETE"])
-            //         .supports_credentials()
-            //         .max_age(3600)
-            // )
+            .wrap(
+                Cors::default()
+                    .allow_any_origin()
+                    .allowed_origin(&allowed_origin)
+                    .allow_any_header()
+                    .allowed_methods(vec!["GET", "POST", "DELETE"])
+                    .supports_credentials()
+                    .max_age(3600)
+            )
 
             // Routes
             .configure(routes::routes_factory)
