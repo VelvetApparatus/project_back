@@ -5,6 +5,10 @@ use actix_web_lab::sse::{self, ChannelStream, Sse};
 use futures_util::future;
 use parking_lot::Mutex;
 
+/*
+Struct for Server-Sent-Events
+*/
+
 #[derive(Debug)]
 pub struct Broadcaster {
     inner: Mutex<BroadcasterInner>,

@@ -5,8 +5,12 @@ use uuid::Uuid;
 #[derive(Clone, Debug)]
 #[derive(Serialize, Deserialize)]
 pub struct User {
-    pub id: Uuid,
-    pub name: String
+    pub user_id: Uuid,
+    pub name: String,
+    pub channels: Vec<Uuid>,
+    pub login: String,
+    pub password_hash: String,
+    pub session_id: String,
 }
 
 
