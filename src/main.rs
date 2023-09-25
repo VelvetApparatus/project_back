@@ -1,9 +1,10 @@
-use std::env;
+use std::{env, sync::{Mutex, Arc}};
 
 use actix_cors::Cors;
 use actix_web::{HttpServer, App, middleware::Logger, web::{self, Data}};
 use dotenvy::dotenv;
 use sqlx::postgres::PgPoolOptions;
+use uuid::Uuid;
 
 
 // Project modules 
@@ -14,6 +15,12 @@ pub mod handlers;
 pub mod utils;
 // ----------------------------------------------------------------
 
+
+#[derive(Clone)]
+pub struct AppState {
+    pub channels: Arc<Mutex<Vec<Uuid>>>,
+    pub users: Arc<Mutex<Vec<Uuid>>>
+}
 
 #[actix_rt::main]
 async fn main() -> Result<(), std::io::Error>{
@@ -40,10 +47,19 @@ async fn main() -> Result<(), std::io::Error>{
         .await
         .unwrap_or_else(|e|panic!("Can't get a connection with DB. {:?}", e));
 
+    
+    let state = AppState {
+        channels: Arc::new(Mutex::new(Vec::new())),
+        users: Arc::new(Mutex::new(Vec::new()))
+    };
 
+    
     HttpServer::new(move || {
 
         App::new()
+
+            // Set up state for connections
+            .app_data(Data::new(state.clone()))
 
             // Set up DB pool to be used with web::Data<Pool> extractor
             .app_data(Data::new(pool.clone()))
@@ -57,7 +73,6 @@ async fn main() -> Result<(), std::io::Error>{
             // CORS 
             .wrap(
                 Cors::default()
-                    .allow_any_origin()
                     .allowed_origin(&allowed_origin)
                     .allow_any_header()
                     .allowed_methods(vec!["GET", "POST", "DELETE"])
