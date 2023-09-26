@@ -37,4 +37,21 @@ impl Channel {
         .fetch_all(pool.as_ref())
         .await
     }
+
+
+    pub async fn create(
+        name: String,
+        users: Vec<Uuid>,
+        pool: Data<PgPool>,
+        // img: Option<String>
+    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+        sqlx::query!(
+            "INSERT INTO channels VALUES ($1, null, $2, $3)",
+            Uuid::new_v4(),
+            name,
+            users.as_slice()
+        )
+        .execute(pool.as_ref())
+        .await
+    }
 }
