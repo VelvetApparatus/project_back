@@ -17,24 +17,12 @@ pub struct User {
     pub last_online: Option<chrono::NaiveDateTime>
 
 }
-/*
--- Add migration script here
-CREATE TABLE IF NOT EXISTS users (
-    user_id UUID PRIMARY KEY,
-    username TEXT NOT NULL,
-    login TEXT NOT NULL,
-    password_hash TEXT NOT NULL,
-    channels UUID[],
-    Image TEXT,
-    is_online BOOLEAN,
-    last_online TIMESTAMP
-);
-
- */
 
 #[derive(Serialize, Deserialize, sqlx::FromRow)]
 pub struct StructForGetChannels {
     channel_name: Option<String>,
+    channel_img: Option<String>,
+    message_body: Option<String>,
 }
 impl User {
     
@@ -44,7 +32,7 @@ impl User {
         pool: Data<PgPool>
     ) -> Result<Vec<StructForGetChannels>, sqlx::Error> {
         sqlx::query_as!(
-            StructForGetChannels,
+            StructForGetChannels, 
             "SELECT * FROM get_user_channels($1)",
             user_id
         )

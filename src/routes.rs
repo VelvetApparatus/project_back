@@ -1,6 +1,6 @@
-use actix_web::web::{ServiceConfig, self, post, scope};
+use actix_web::web::{ServiceConfig, self, post, scope, get};
 
-use crate::handlers::auth::{register::reg, log_in::log_in, log_out::log_out};
+use crate::handlers::{auth::{register::reg, log_in::log_in, log_out::log_out}, chat::show_channels::show_channels};
 
 pub fn routes_factory(app: &mut ServiceConfig) {
     app.service(
@@ -10,6 +10,11 @@ pub fn routes_factory(app: &mut ServiceConfig) {
                     .route("/reg", post().to(reg))
                     .route("log_in", post().to(log_in))
                     .route("/log_out", post().to(log_out))
+            )
+            .service(
+        scope("/chat")
+                    .route("/channels", get().to(show_channels))
+
             )
     );
 }
