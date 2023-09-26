@@ -1,45 +1,40 @@
-use std::sync::Arc;
 use actix_web::web::Data;
-use actix_web_lab::sse::{Sse, ChannelStream};
-use serde::{Deserialize, Serialize};
+use serde::Serialize;
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use super::{user::User, broadcast::Broadcaster};
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, sqlx::FromRow)]
 pub struct Channel {
-    pub id: Uuid,
-    pub name: String,
-    pub users: Vec<User>,
-    pub broadcaster: Arc<Broadcaster>,
+    pub channel_id: Option<Uuid>,
+    pub name: Option<String>,
+    pub users: Option<Vec<Uuid>>,
+    pub img: Option<String>,
+    pub last_message_id: Option<Uuid>
+}
+
+#[derive(Serialize)]
+pub struct StructForGetChannels {
+    pub username: Option<String>,
+    pub message_body: Option<String>,
+    pub created_at: Option<chrono::NaiveDateTime>
 }
 
 impl Channel {
-
-    // pub fn get_users(&self) {
-    //     let mut result = String::from("Users in channel: ");
-    //     for user in self.users.iter() {
-    //         result.push_str(&format!("{}, ", user.name));
-    //     }
-    //     result.pop();
-    //     result.pop();
-    // }
-
-    // pub async fn add_user(&mut self, user: &User) -> Sse<ChannelStream> {
-    //     self.users.push(user.clone());
-    //     self.broadcaster.new_client().await
-        
-    // }
-
-    // pub fn remove_user(&mut self, user: &User) {
-    //     self.users = self.users.iter().filter(|&u| u.name != user.name).cloned().collect();
-    // }
-
-    // pub async fn message(&self, message: String) {
-    //     // for user in self.users.iter() {
-    //         self.broadcaster.broadcast(message.as_str()).await
-    //     // }
-    // }
-
+    pub async fn get_messages(
+        channel_id: Uuid,
+        start_index: i32,
+        end_index: i32,
+        pool: Data<PgPool>
+    ) -> Result<Vec<StructForGetChannels>, sqlx::Error> {
+        sqlx::query_as!(
+            StructForGetChannels,
+            "SELECT * FROM get_messages_by_channel($1, $2, $3)",
+            channel_id,
+            start_index,
+            end_index
+        )
+        .fetch_all(pool.as_ref())
+        .await
     }
+}
