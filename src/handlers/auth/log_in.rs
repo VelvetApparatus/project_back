@@ -4,7 +4,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::{models::auth::user::AuthorizedUser, utils::password_hashing::hash};
+use crate::{models::chat::user::User, utils::password_hashing::hash};
 
 
 
@@ -22,15 +22,15 @@ pub async fn log_in(
 ) -> impl Responder {
     let mock = req.into_inner().unwrap();
 
-    let users = AuthorizedUser::get_by_email(&mock.email, &pool).await;
+    let users = User::get_by_email(&mock.email, &pool).await;
 
     match users {
         Ok(value) => {
             match value.first() {
                 Some(user) => {
-                    let hash_password = hash(mock.password.as_bytes(), user.id.to_string()).to_string();
-
-                    match hash_password.eq(&user.password_hash) {
+                    let hash_password = hash(mock.password.as_bytes(), user.user_id.unwrap().to_string()).to_string();
+                    let old_password_hash = user.password_hash.clone().unwrap();
+                    match hash_password.eq(&old_password_hash) {
                         true => {
                             id.remember(Uuid::new_v4().to_string());
                             HttpResponse::Ok().finish()

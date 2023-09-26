@@ -3,7 +3,7 @@ use serde::Deserialize;
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::{models::auth::user::AuthorizedUser, utils::password_hashing};
+use crate::{models::chat::user::User, utils::password_hashing};
 
 
 
@@ -24,16 +24,14 @@ pub async fn reg(
 
 
     // TODO: CREATE UNIQUE EMAIL CHECK 
-    if AuthorizedUser::get_by_email(&mock.email, &pool).await.unwrap().len() > 0 {
+    if User::get_by_email(&mock.email, &pool).await.unwrap().len() > 0 {
         return HttpResponse::BadRequest().json("Email must be unique")
     }
-    match AuthorizedUser::create(
-        &AuthorizedUser {
-            id: id,
-            username: mock.username,
-            login: mock.email,
-            password_hash: password.to_string(),
-        },
+    match User::create(
+        id,
+        mock.email,
+        password.to_string(),
+        mock.username,
         &pool
     ).await {
         Ok(_) => {
