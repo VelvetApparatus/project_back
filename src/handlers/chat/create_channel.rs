@@ -12,6 +12,9 @@ pub struct CreateChannelData {
     pub name: String,
     pub users: Vec<Uuid>,
 }
+// =================================================================================
+// REFACTOR CHANNELS STRUCT (ADD CREATOR_ID )
+// =================================================================================
 
 pub async fn create_channel(
     pool: Data<PgPool>,
@@ -19,16 +22,23 @@ pub async fn create_channel(
     req: Json<Option<CreateChannelData>>
 ) -> HttpResponse {
     if let Some(id) = id.identity() {
-        let mock = req.into_inner();
-        match mock {
-            Some(mut value) => {
-                value.users.push(Uuid::parse_str(&id).unwrap());
-                match Channel::create(value.name, value.users, pool).await {
-                    Ok(_) => { HttpResponse::Ok().finish() },
-                    Err(_) => { HttpResponse::Conflict().finish() }
+        match Uuid::parse_str(&id) {
+            Ok(uid) => {
+                let mock = req.into_inner();
+                match mock {
+                    Some(mut value) => {
+                        // Adding Uuid of creator
+                        value.users.push(uid.clone());
+
+                        match Channel::create(value.name, value.users, uid, pool).await {
+                            Ok(_) => { HttpResponse::Ok().finish() },
+                            Err(_) => { HttpResponse::Conflict().finish() }
+                        }
+                    },
+                    None => {HttpResponse::BadRequest().finish()}
                 }
             },
-            None => {HttpResponse::BadRequest().finish()}
+            Err(_) => {HttpResponse::Unauthorized().finish()}
         }
     }
     else {

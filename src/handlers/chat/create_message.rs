@@ -21,12 +21,7 @@ pub async fn create_message(
     if let Some(id) = id.identity() {
         match Uuid::parse_str(&id) {
             Ok(id) => {
-                match Message::new(
-                    id,
-                    body.reciever,
-                    body.body,
-                    pool
-                ).await {
+                match Message::new(id,body.reciever,body.body,pool).await {
                     Ok(_) => {
                         HttpResponse::Ok().finish()
                     },

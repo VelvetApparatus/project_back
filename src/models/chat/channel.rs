@@ -10,7 +10,8 @@ pub struct Channel {
     pub name: Option<String>,
     pub users: Option<Vec<Uuid>>,
     pub img: Option<String>,
-    pub last_message_id: Option<Uuid>
+    pub last_message_id: Option<Uuid>,
+    pub creator_id: Option<Uuid>
 }
 
 #[derive(Serialize)]
@@ -42,14 +43,16 @@ impl Channel {
     pub async fn create(
         name: String,
         users: Vec<Uuid>,
+        creator_id: Uuid,
         pool: Data<PgPool>,
         // img: Option<String>
     ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
         sqlx::query!(
-            "INSERT INTO channels VALUES ($1, null, $2, $3)",
+            "INSERT INTO channels VALUES ($1, null, $2, $3, null, $4)",
             Uuid::new_v4(),
             name,
-            users.as_slice()
+            users.as_slice(),
+            creator_id
         )
         .execute(pool.as_ref())
         .await

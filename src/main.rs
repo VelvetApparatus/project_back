@@ -3,8 +3,8 @@ use std::{env, sync::{Mutex, Arc}};
 use actix_cors::Cors;
 use actix_web::{HttpServer, App, middleware::Logger, web::{self, Data}};
 use dotenvy::dotenv;
+use models::chat::{channel::Channel, user::User};
 use sqlx::postgres::PgPoolOptions;
-use uuid::Uuid;
 
 
 
@@ -17,10 +17,12 @@ pub mod utils;
 // ----------------------------------------------------------------
 
 
+
+// Model For Broadcast Server-Sent-Events
 #[derive(Clone)]
 pub struct AppState {
-    pub channels: Arc<Mutex<Vec<Uuid>>>,
-    pub users: Arc<Mutex<Vec<Uuid>>>
+    pub channels: Arc<Mutex<Vec<Channel>>>,
+    pub users: Arc<Mutex<Vec<User>>>
 }
 
 #[actix_rt::main]
