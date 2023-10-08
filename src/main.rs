@@ -7,6 +7,7 @@ use sqlx::postgres::PgPoolOptions;
 use uuid::Uuid;
 
 
+
 // Project modules 
 // ----------------------------------------------------------------
 pub mod routes;
@@ -82,6 +83,7 @@ async fn main() -> Result<(), std::io::Error>{
 
             // Routes
             .configure(routes::routes_factory)
+
 
     })
     .bind(server_url)?
