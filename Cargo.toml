@@ -30,7 +30,8 @@ actix-cors = "0.6.4"
 chrono = { version = "0.4.11", features = ["serde"] }
 
 # Cookie
-actix-identity = "0.4.0"
+actix-session = { version = "0.8.0", features = ["cookie-session"] }
+
 
 # Swagger 
 # utoipa = {version = "4.0.0", features = ["actix_extras", "chrono", "uuid"]}

@@ -76,7 +76,8 @@ async fn main() -> Result<(), std::io::Error>{
             // CORS 
             .wrap(
                 Cors::default()
-                    .allowed_origin(&allowed_origin)
+                    // .allowed_origin(&allowed_origin)
+                    .allow_any_origin()
                     .allow_any_header()
                     .allowed_methods(vec!["GET", "POST", "DELETE"])
                     .supports_credentials()

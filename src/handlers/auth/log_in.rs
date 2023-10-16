@@ -1,5 +1,4 @@
-use actix_identity::Identity;
-use actix_web::{web::{Json, Data}, HttpResponse, Responder};
+use actix_web::{web::{Json, Data}, HttpResponse, Responder, cookie::Cookie};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
 use uuid::Uuid;
@@ -18,7 +17,6 @@ pub struct AuthorizationData {
 pub async fn log_in(
     req: Json<Option<AuthorizationData>>,
     pool: Data<PgPool>,
-    id: Identity
 ) -> impl Responder {
     let mock = req.into_inner().unwrap();
 
@@ -28,12 +26,19 @@ pub async fn log_in(
         Ok(value) => {
             match value.first() {
                 Some(user) => {
+                    // Checking that the password is correct
                     let hash_password = hash(mock.password.as_bytes(), user.user_id.unwrap().to_string()).to_string();
                     let old_password_hash = user.password_hash.clone().unwrap();
                     match hash_password.eq(&old_password_hash) {
                         true => {
-                            id.remember(Uuid::new_v4().to_string());
-                            HttpResponse::Ok().finish()
+
+                            let new_uuid = user.user_id.unwrap();
+
+                            // Sending the Response
+                            HttpResponse::Ok()
+                                .cookie(Cookie::new("auth", new_uuid.to_string()))
+                                .json(new_uuid.to_string())
+
                         },
                         false => {HttpResponse::Unauthorized().json("Password are invalid")}
                     }

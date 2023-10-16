@@ -1,9 +1,8 @@
-use actix_identity::Identity;
-use actix_web::{web::{Data, Json}, HttpResponse};
+use actix_web::{web::{Data, Json}, HttpResponse, HttpRequest};
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::models::chat::message::Message;
+use crate::{models::chat::message::Message, utils::cookie_checker::{check, CheckResult}};
 
 
 pub struct SendMessageBody {
@@ -13,26 +12,26 @@ pub struct SendMessageBody {
 
 
 pub async fn create_message(
-    req: Json<Option<SendMessageBody>>,
-    id: Identity,
+    request: HttpRequest,
+    body: Json<Option<SendMessageBody>>,
     pool: Data<PgPool>,
 ) -> HttpResponse {
-    let body = req.into_inner().unwrap();
-    if let Some(id) = id.identity() {
-        match Uuid::parse_str(&id) {
-            Ok(id) => {
-                match Message::new(id,body.reciever,body.body,pool).await {
-                    Ok(_) => {
-                        HttpResponse::Ok().finish()
-                    },
-                    Err(_) => {HttpResponse::BadGateway().finish()}
-                    
+
+    match check(&pool, &request).await {
+        CheckResult::BadGateway=> HttpResponse::BadGateway().json("Coludn't get the current user"),
+        CheckResult::Unauthorized => HttpResponse::Unauthorized().json("Unauthorized"),
+        CheckResult::Success(user) => {
+            match body.into_inner() {
+                None => HttpResponse::BadRequest().json("Body is missing"),
+                Some(body) => {
+                    match Message::new(user.user_id.unwrap(), body.reciever, body.body, pool).await {
+                        Ok(_) => HttpResponse::Ok().finish(),
+                        Err(_) => HttpResponse::Conflict().finish()
+                    }
                 }
-            },
-            Err(_) => { HttpResponse::Unauthorized().finish() }
+            }
         }
-    } else {
-        HttpResponse::Unauthorized().finish()
     }
+
 
 }

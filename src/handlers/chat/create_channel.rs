@@ -1,10 +1,9 @@
-use actix_identity::Identity;
-use actix_web::{web::{Data, Json}, HttpResponse};
+use actix_web::{web::{Data, Json}, HttpResponse, HttpRequest};
 use serde::Deserialize;
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::models::chat::channel::Channel;
+use crate::{utils::cookie_checker::{CheckResult, check}, models::chat::channel::Channel};
 
 
 #[derive(Debug, Deserialize)]
@@ -12,36 +11,35 @@ pub struct CreateChannelData {
     pub name: String,
     pub users: Vec<Uuid>,
 }
-// =================================================================================
-// REFACTOR CHANNELS STRUCT (ADD CREATOR_ID )
-// =================================================================================
 
 pub async fn create_channel(
     pool: Data<PgPool>,
-    id: Identity,
-    req: Json<Option<CreateChannelData>>
+    body: Json<Option<CreateChannelData>>,
+    request: HttpRequest
 ) -> HttpResponse {
-    if let Some(id) = id.identity() {
-        match Uuid::parse_str(&id) {
-            Ok(uid) => {
-                let mock = req.into_inner();
-                match mock {
-                    Some(mut value) => {
-                        // Adding Uuid of creator
-                        value.users.push(uid.clone());
-
-                        match Channel::create(value.name, value.users, uid, pool).await {
-                            Ok(_) => { HttpResponse::Ok().finish() },
-                            Err(_) => { HttpResponse::Conflict().finish() }
-                        }
-                    },
-                    None => {HttpResponse::BadRequest().finish()}
+    match check(&pool, &request).await {
+        CheckResult::BadGateway=> HttpResponse::BadGateway().json("Coludn't get the current user"),
+        CheckResult::Unauthorized => HttpResponse::Unauthorized().json("Unauthorized"),
+        CheckResult::Success(user) => {
+            match body.into_inner() {
+                None => HttpResponse::BadRequest().json("Body is missing"),
+                Some(mut body) => {
+                    let channel_id = Uuid::new_v4();
+                    body.users.push(user.user_id.unwrap());
+                    match Channel::create(
+                        body.name,
+                        body.users,
+                        user.user_id.unwrap(),
+                        channel_id.clone(),
+                         pool
+                        ).await {
+                        Ok(_) => HttpResponse::Ok().json(channel_id),
+                        Err(_) => HttpResponse::Conflict().finish()
+                    }
                 }
-            },
-            Err(_) => {HttpResponse::Unauthorized().finish()}
+            }
+
         }
     }
-    else {
-        HttpResponse::Unauthorized().finish()
-    }
+
 }

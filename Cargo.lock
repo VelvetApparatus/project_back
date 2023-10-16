@@ -97,21 +97,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "actix-identity"
-version = "0.4.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "171fe3ed055b2dd50c61967911d253d47e76e1d4308acfbf99fc7affe5ec42aa"
-dependencies = [
- "actix-service",
- "actix-utils",
- "actix-web",
- "futures-util",
- "serde",
- "serde_json",
- "time",
-]
-
-[[package]]
 name = "actix-macros"
 version = "0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -171,6 +156,23 @@ dependencies = [
  "futures-core",
  "paste",
  "pin-project-lite",
+]
+
+[[package]]
+name = "actix-session"
+version = "0.8.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2e6a28f813a6671e1847d005cad0be36ae4d016287690f765c303379837c13d6"
+dependencies = [
+ "actix-service",
+ "actix-utils",
+ "actix-web",
+ "anyhow",
+ "async-trait",
+ "derive_more",
+ "serde",
+ "serde_json",
+ "tracing",
 ]
 
 [[package]]
@@ -391,6 +393,12 @@ checksum = "819e7219dbd41043ac279b19830f2efc897156490d7fd6ea916720117ee66311"
 dependencies = [
  "libc",
 ]
+
+[[package]]
+name = "anyhow"
+version = "1.0.75"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "a4668cab20f66d8d020e1fbc0ebe47217433c1b6c8f2040faf858554e394ace6"
 
 [[package]]
 name = "arc-swap"
@@ -1637,8 +1645,8 @@ name = "project_back"
 version = "0.1.0"
 dependencies = [
  "actix-cors",
- "actix-identity",
  "actix-rt",
+ "actix-session",
  "actix-web",
  "actix-web-lab",
  "argon2",

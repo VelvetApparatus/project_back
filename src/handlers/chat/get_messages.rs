@@ -1,10 +1,8 @@
-use actix_identity::Identity;
-use actix_web::{web::{Json, Data}, HttpResponse};
+use actix_web::{web::{Json, Data}, HttpResponse, HttpRequest};
 use serde::Deserialize;
 use sqlx::PgPool;
-use uuid::Uuid;
 
-use crate::models::chat::channel::Channel;
+use crate::{models::chat::channel::Channel, utils::cookie_checker::{check, CheckResult}};
 
 
 
@@ -16,26 +14,31 @@ pub struct GetMessagesData {
 
 
 pub async fn get_messages(
-    req: Json<Option<GetMessagesData>>,
+    request: HttpRequest,
+    body: Json<Option<GetMessagesData>>,
     pool: Data<PgPool>,
-    id: Identity
 ) -> HttpResponse {
-    if let Some(id) = id.identity() {
-        let mock = req.into_inner().unwrap();
-        let result = Channel::get_messages(
-            Uuid::parse_str(&id).unwrap(), 
-            mock.start_index, 
-            mock.end_index, 
-            pool
-        ).await;
-        match result {
-            Ok(value) => {
-                HttpResponse::Ok().json(value)
-            },
-            Err(_) => {HttpResponse::BadGateway().finish()}
-        }
-    } else {
-        HttpResponse::Unauthorized().finish()
-    }    
 
+    match check(&pool, &request).await {
+        CheckResult::BadGateway=> HttpResponse::BadGateway().json("Coludn't get the current user"),
+        CheckResult::Unauthorized => HttpResponse::Unauthorized().json("Unauthorized"),
+        CheckResult::Success(user) => {
+            match body.into_inner() {
+                None => HttpResponse::BadRequest().json("Body is missing"),
+                Some(body) => {
+                    match Channel::get_messages(
+                        user.user_id.unwrap(), 
+                        body.start_index, 
+                        body.end_index, 
+                        pool
+                    ).await {
+                        Ok(value) => {
+                            HttpResponse::Ok().json(value)
+                        },
+                        Err(_) => {HttpResponse::BadGateway().finish()}
+                    }
+                }
+            }
+        }
+    }
 }

@@ -9,11 +9,13 @@ pub fn routes_factory(app: &mut ServiceConfig) {
         scope("/auth")
                     .route("/reg", post().to(reg))
                     .route("/log_in", post().to(log_in))
-                    .route("/log_out", post().to(log_out))
+                    .route("/log_out", get().to(log_out))
             )
             .service(
         scope("/chat")
+        // =================================================================
         // TODO: CREATE_CHANNEL_ROUTE, SEND_MESSAGE_ROUTE 
+        // =================================================================
                     .route("/channels/get", get().to(show_channels))
                     .route("/messages/get", post().to(get_messages))
                     .route("/channel/create", post().to(create_channel))

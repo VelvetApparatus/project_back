@@ -54,9 +54,9 @@ impl User {
                 ($1, $2, $3, $4)
                 ",
                 user_id,
+                username,
                 login,
                 password_hash,
-                username
             )
                 .execute(pool.as_ref())
                 .await
@@ -73,6 +73,22 @@ impl User {
             SELECT * FROM users WHERE login = $1
             ", 
             login
+        )
+        .fetch_all(pool.as_ref())
+        .await
+    }
+
+
+    pub async fn get_by_user_id(
+        user_id: &Uuid,
+        pool: &Data<PgPool>
+    ) -> Result<Vec<User>, sqlx::Error> {
+        sqlx::query_as!(
+            User,
+            "
+            SELECT * FROM users WHERE user_id = $1
+            ", 
+            user_id
         )
         .fetch_all(pool.as_ref())
         .await
