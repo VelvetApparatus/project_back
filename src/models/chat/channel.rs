@@ -50,7 +50,7 @@ impl Channel {
     ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
         sqlx::query!(
             "INSERT INTO channels VALUES ($1, null, $2, $3, null, $4)",
-            creator_id,
+            channel_id,
             name,
             users.as_slice(),
             creator_id

@@ -16,7 +16,7 @@ pub async fn show_channels(
         },
         CheckResult::Success(user) => {
             match User::get_channels(user.user_id.unwrap(), pool).await {
-                Ok(_) => HttpResponse::Ok().finish(),
+                Ok(value) => HttpResponse::Ok().json(value),
                 Err(e) => HttpResponse::Conflict().json(e.to_string())
             }
         }

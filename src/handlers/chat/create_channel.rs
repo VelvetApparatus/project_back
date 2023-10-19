@@ -31,7 +31,7 @@ pub async fn create_channel(
                         body.users,
                         user.user_id.unwrap(),
                         channel_id.clone(),
-                         pool
+                        pool
                         ).await {
                         Ok(_) => HttpResponse::Ok().json(channel_id),
                         Err(_) => HttpResponse::Conflict().finish()

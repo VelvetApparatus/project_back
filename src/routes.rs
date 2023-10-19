@@ -1,6 +1,6 @@
 use actix_web::web::{ServiceConfig, post, scope, get};
 
-use crate::handlers::{auth::{register::reg, log_in::log_in, log_out::log_out}, chat::{show_channels::show_channels, get_messages::get_messages, create_channel::create_channel}};
+use crate::handlers::{auth::{register::reg, log_in::log_in, log_out::log_out}, chat::{show_channels::show_channels, get_messages::get_messages, create_channel::create_channel, create_message::create_message}};
 
 pub fn routes_factory(app: &mut ServiceConfig) {
     app.service(
@@ -13,13 +13,16 @@ pub fn routes_factory(app: &mut ServiceConfig) {
             )
             .service(
         scope("/chat")
-        // =================================================================
-        // TODO: CREATE_CHANNEL_ROUTE, SEND_MESSAGE_ROUTE 
-        // =================================================================
-                    .route("/channels/get", get().to(show_channels))
-                    .route("/messages/get", post().to(get_messages))
-                    .route("/channel/create", post().to(create_channel))
-
+                .service(
+                    scope("/messages")
+                                .route("/create", post().to(create_message))
+                                .route("/get", post().to(get_messages))
+                )
+                .service(
+                    scope("/channels")
+                                .route("/get", get().to(show_channels))
+                                .route("/create", post().to(create_channel))
+                )
             )
     );
 }

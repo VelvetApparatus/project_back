@@ -1,14 +1,21 @@
 -- Add migration script here
-CREATE OR REPLACE FUNCTION get_user_channels(user_id UUID)
-RETURNS TABLE (
-    channel_name TEXT,
-    channel_img TEXT,
-    message_body TEXT
-) AS $$
+-- FUNCTION: public.get_user_channels(uuid)
+
+-- DROP FUNCTION IF EXISTS public.get_user_channels(uuid);
+
+CREATE OR REPLACE FUNCTION public.get_user_channels(
+	u_id uuid)
+    RETURNS TABLE(channel_name text, channel_img text, message_body text) 
+    LANGUAGE 'plpgsql'
+    COST 100
+    VOLATILE PARALLEL UNSAFE
+    ROWS 1000
+
+AS $BODY$
 DECLARE
     channel_id UUID;
 BEGIN
-    FOR channel_id IN SELECT UNNEST(channels) FROM users WHERE user_id = user_id LOOP
+    FOR channel_id IN SELECT UNNEST(channels) FROM users WHERE users.user_id = u_id LOOP
         SELECT
             channels.name,
             channels.img,
@@ -34,4 +41,7 @@ BEGIN
 
     RETURN;
 END;
-$$ LANGUAGE plpgsql;
+$BODY$;
+
+ALTER FUNCTION public.get_user_channels(uuid)
+    OWNER TO postgres;

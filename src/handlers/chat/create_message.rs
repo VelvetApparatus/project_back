@@ -1,10 +1,11 @@
 use actix_web::{web::{Data, Json}, HttpResponse, HttpRequest};
+use serde::Deserialize;
 use sqlx::PgPool;
 use uuid::Uuid;
 
 use crate::{models::chat::message::Message, utils::cookie_checker::{check, CheckResult}};
 
-
+#[derive(Deserialize)]
 pub struct SendMessageBody {
     pub reciever: Uuid,
     pub body: String,
