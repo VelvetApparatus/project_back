@@ -1,7 +1,6 @@
 use actix_web::{web::{Json, Data}, HttpResponse, Responder, cookie::Cookie};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use uuid::Uuid;
 
 use crate::{models::chat::user::User, utils::password_hashing::hash};
 

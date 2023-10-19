@@ -32,6 +32,10 @@ chrono = { version = "0.4.11", features = ["serde"] }
 # Cookie
 actix-session = { version = "0.8.0", features = ["cookie-session"] }
 
+# WebSocket
+actix-web-actors="4.2.0"
+actix = "0.13.1"
+
 
 # Swagger 
 # utoipa = {version = "4.0.0", features = ["actix_extras", "chrono", "uuid"]}
