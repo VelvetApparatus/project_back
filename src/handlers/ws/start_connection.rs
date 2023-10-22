@@ -5,7 +5,7 @@ use uuid::Uuid;
 
 use crate::models::websockets::{lobby::Lobby, connection::WsConn};
 
-#[get("/{group_id}")]
+#[get("/{session_id}")]
 pub async fn start_connection(
     req: HttpRequest,
     stream: Payload,

@@ -57,12 +57,6 @@ async fn main() -> Result<(), std::io::Error>{
         .unwrap_or_else(|e|panic!("Can't get a connection with DB. {:?}", e));
 
     
-    let state = AppState {
-        channels: Arc::new(Mutex::new(Vec::new())),
-        users: Arc::new(Mutex::new(Vec::new()))
-    };
-
-    
     HttpServer::new(move || {
 
         App::new()

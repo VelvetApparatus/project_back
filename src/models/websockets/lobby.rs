@@ -2,7 +2,7 @@ use crate::models::chat::message::Message;
 
 use super::messages::{ClientActorMessage, Connect, Disconnect, WsMessage};
 use actix::prelude::{Actor, Context, Handler, Recipient};
-use std::collections::{HashMap, HashSet};
+use std::collections::HashMap;
 use uuid::Uuid;
 
 
@@ -10,7 +10,6 @@ type Socket = Recipient<WsMessage>;
 
 pub struct Lobby {
     sessions: HashMap<Uuid, Socket>,       // self id to self
-    // rooms: HashMap<Uuid, HashSet<Uuid>>,   // room id  to list of users id
 }
 
 impl Default for Lobby {

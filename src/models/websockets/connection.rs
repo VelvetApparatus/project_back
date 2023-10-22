@@ -1,4 +1,3 @@
-use std::mem;
 use std::time::{Duration, Instant};
 use actix::prelude::ContextFutureSpawner;
 use actix::{fut, ActorContext, WrapFuture, ActorFutureExt, StreamHandler, Handler};
@@ -6,7 +5,6 @@ use actix::{Addr, Actor, AsyncContext};
 use actix_web_actors::ws;
 use uuid::Uuid;
 
-use crate::models::chat::message::Message;
 
 use super::lobby::Lobby;
 use super::messages::{Connect, Disconnect, ClientActorMessage, WsMessage};
@@ -105,9 +103,9 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsConn {
             Ok(ws::Message::Nop) => (),
             Ok(ws::Message::Text(s)) => {
                 // println!("UNSAFE START");
-                // let ptr: *const u8 = s.as_ptr();
-                // let x = ptr.cast::<Message>().as_ref().unwrap();
-                // println!("{:?}", s);
+                // =================================================================
+                // TODO ADD BROADCAST 
+                // =================================================================
                 let x = serde_json::from_str::<ClientActorMessage>(&s);
                 match x {
                     Ok(value) => {

@@ -17,7 +17,6 @@ pub async fn create_message(
     body: Json<Option<SendMessageBody>>,
     pool: Data<PgPool>,
 ) -> HttpResponse {
-
     match check(&pool, &request).await {
         CheckResult::BadGateway=> HttpResponse::BadGateway().json("Coludn't get the current user"),
         CheckResult::Unauthorized => HttpResponse::Unauthorized().json("Unauthorized"),
