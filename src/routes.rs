@@ -1,10 +1,10 @@
 use actix_web::web::{ServiceConfig, post, scope, get};
 
-use crate::{
-    stream::index,
+use crate::
     handlers::{
     auth::{register::reg, log_in::log_in, log_out::log_out},
-    chat::{show_channels::show_channels, get_messages::get_messages, create_channel::create_channel, create_message::create_message}, ws::start_connection}
+    chat::{show_channels::show_channels, get_messages::get_messages, create_channel::create_channel, create_message::create_message},
+    ws::start_connection
 };
     
 
@@ -32,7 +32,6 @@ scope("/api/v1")
             )
             .service(
         scope("/stream")
-                    .route("/start", get().to(index))
                     .service(start_connection::start_connection)
             )
     );

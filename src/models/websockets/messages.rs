@@ -25,6 +25,6 @@ pub struct Disconnect {
 #[derive(Message, Clone, Serialize, Deserialize, Debug)]
 #[rtype(result = "()")]
 pub struct ClientActorMessage {
-    pub id: Uuid,
+    pub id: Vec<Uuid>,
     pub msg: chat::message::Message,
 }

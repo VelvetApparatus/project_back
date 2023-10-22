@@ -103,9 +103,6 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsConn {
             Ok(ws::Message::Nop) => (),
             Ok(ws::Message::Text(s)) => {
                 // println!("UNSAFE START");
-                // =================================================================
-                // TODO ADD BROADCAST 
-                // =================================================================
                 let x = serde_json::from_str::<ClientActorMessage>(&s);
                 match x {
                     Ok(value) => {
