@@ -8,7 +8,7 @@ use uuid::Uuid;
 struct for Response to Front
 */
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Message {
     message_id: Option<Uuid>,
     user_id: Option<Uuid>,

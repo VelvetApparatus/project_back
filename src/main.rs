@@ -1,9 +1,10 @@
 use std::{env, sync::{Mutex, Arc}};
 
+use actix::Actor;
 use actix_cors::Cors;
 use actix_web::{HttpServer, App, middleware::Logger, web::{self, Data}};
 use dotenvy::dotenv;
-use models::chat::{channel::Channel, user::User};
+use models::{chat::{channel::Channel, user::User}, websockets::lobby::Lobby};
 use sqlx::postgres::PgPoolOptions;
 
 
@@ -32,6 +33,10 @@ async fn main() -> Result<(), std::io::Error>{
     env::set_var("RUST_LOG", "actix_web=info,actix_server=info");
     env_logger::init();
     
+
+    let chat_server = Lobby::default().start(); //create and spin up a lobby
+
+
 
     let server_url = env::var("SERVER_URL")
         .expect("SERVER_URL must be set");
@@ -62,8 +67,10 @@ async fn main() -> Result<(), std::io::Error>{
 
         App::new()
 
+            .app_data(Data::new(chat_server.clone()))
+
             // Set up state for connections
-            .app_data(Data::new(state.clone()))
+            // .app_data(Data::new(state.clone()))
 
             // Set up DB pool to be used with web::Data<Pool> extractor
             .app_data(Data::new(pool.clone()))
