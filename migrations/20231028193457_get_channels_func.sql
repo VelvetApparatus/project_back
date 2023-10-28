@@ -1,4 +1,5 @@
 -- Add migration script here
+-- Add migration script here
 -- FUNCTION: public.get_user_channels(uuid)
 
 -- DROP FUNCTION IF EXISTS public.get_user_channels(uuid);
@@ -13,9 +14,9 @@ CREATE OR REPLACE FUNCTION public.get_user_channels(
 
 AS $BODY$
 DECLARE
-    channel_id UUID;
+    ch_id UUID;
 BEGIN
-    FOR channel_id IN SELECT UNNEST(channels) FROM users WHERE users.user_id = u_id LOOP
+    FOR ch_id IN SELECT UNNEST(channels) FROM users WHERE users.user_id = u_id LOOP
         SELECT
             channels.name,
             channels.img,
@@ -29,7 +30,7 @@ BEGIN
         LEFT JOIN
             messages ON channels.channel_id = messages.channel_id
         WHERE
-            channels.channel_id = channel_id
+            channels.channel_id = ch_id
         ORDER BY
             messages.created_at DESC
         LIMIT 1;

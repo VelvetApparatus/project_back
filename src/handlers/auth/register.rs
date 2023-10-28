@@ -23,7 +23,6 @@ pub async fn reg(
     let password = password_hashing::hash(mock.password.as_bytes(), id.clone().to_string());
 
 
-    // TODO: CREATE UNIQUE EMAIL CHECK 
     if User::get_by_email(&mock.email, &pool).await.unwrap().len() > 0 {
         return HttpResponse::BadRequest().json("Email must be unique")
     }
@@ -35,7 +34,6 @@ pub async fn reg(
         &pool
     ).await {
         Ok(_) => {
-            // TODO: Add LOCATION header 
             HttpResponse::Ok().finish()
         },
         Err(_) => {

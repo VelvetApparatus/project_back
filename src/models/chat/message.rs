@@ -23,13 +23,14 @@ pub struct Message {
 impl Message {
     pub async fn new(
         user_id: Uuid,
+        message_id: &Uuid,
         channel_id: Uuid,
         body: String,
         pool: Data<PgPool>
     ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
         sqlx::query!(
             "Insert into messages Values ($1, $2, $3, $4, null, null, $5)",
-            Uuid::new_v4(),
+            message_id,
             user_id,
             channel_id,
             body,

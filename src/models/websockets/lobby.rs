@@ -72,15 +72,13 @@ impl Handler<ClientActorMessage> for Lobby {
     type Result = ();
 
     fn handle(&mut self, msg: ClientActorMessage, _ctx: &mut Context<Self>) -> Self::Result {
-        // TODO change simple id to array 
         for id in msg.id {
             let message = self.sessions
-            .get(&id)
-            .unwrap();
-            message.do_send(WsMessage(serde_json::to_string(&msg.msg).unwrap()))
+            .get(&id);
+            if message.is_some() {
+                message.unwrap().do_send(WsMessage(serde_json::to_string(&msg.msg).unwrap()))
+            }
         }
-
-        // self.send_message(message, id_to)
     }
 }
 

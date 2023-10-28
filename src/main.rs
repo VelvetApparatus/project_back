@@ -1,10 +1,9 @@
-use std::{env, sync::{Mutex, Arc}};
-
+use std::env;
 use actix::Actor;
 use actix_cors::Cors;
 use actix_web::{HttpServer, App, middleware::Logger, web::{self, Data}};
 use dotenvy::dotenv;
-use models::{chat::{channel::Channel, user::User}, websockets::lobby::Lobby};
+use models::websockets::lobby::Lobby;
 use sqlx::postgres::PgPoolOptions;
 
 
@@ -16,15 +15,6 @@ pub mod models;
 pub mod handlers;
 pub mod utils;
 // ----------------------------------------------------------------
-
-
-
-// Model For Broadcast Server-Sent-Events
-#[derive(Clone)]
-pub struct AppState {
-    pub channels: Arc<Mutex<Vec<Channel>>>,
-    pub users: Arc<Mutex<Vec<User>>>
-}
 
 #[actix_rt::main]
 async fn main() -> Result<(), std::io::Error>{
@@ -61,9 +51,6 @@ async fn main() -> Result<(), std::io::Error>{
         App::new()
 
             .app_data(Data::new(chat_server.clone()))
-
-            // Set up state for connections
-            // .app_data(Data::new(state.clone()))
 
             // Set up DB pool to be used with web::Data<Pool> extractor
             .app_data(Data::new(pool.clone()))

@@ -71,7 +71,7 @@ impl Actor for WsConn {
     }
 
 
-    fn stopping(&mut self, ctx: &mut Self::Context) -> actix::Running {
+    fn stopping(&mut self, _ctx: &mut Self::Context) -> actix::Running {
         self.lobby_addr.do_send(Disconnect {
             id: self.session_id,
         });

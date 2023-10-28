@@ -24,8 +24,15 @@ pub async fn create_message(
             match body.into_inner() {
                 None => HttpResponse::BadRequest().json("Body is missing"),
                 Some(body) => {
-                    match Message::new(user.user_id.unwrap(), body.reciever, body.body, pool).await {
-                        Ok(_) => HttpResponse::Ok().finish(),
+                    let id = Uuid::new_v4();
+                    match Message::new(
+                        user.user_id.unwrap(),
+                        &id,
+                        body.reciever, 
+                        body.body, 
+                        pool
+                    ).await {
+                        Ok(_) => HttpResponse::Ok().json(id),
                         Err(_) => HttpResponse::Conflict().finish()
                     }
                 }
