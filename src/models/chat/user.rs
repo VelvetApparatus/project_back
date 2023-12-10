@@ -14,7 +14,9 @@ pub struct User {
     pub channels: Option<Vec<Uuid>>,
     pub image: Option<String>,
     pub is_online: Option<bool>,
-    pub last_online: Option<chrono::NaiveDateTime>
+    pub last_online: Option<chrono::NaiveDateTime>,
+    pub icon: Option<String>,
+    pub background: Option<String>,    
 
 }
 
@@ -91,6 +93,44 @@ impl User {
             user_id
         )
         .fetch_all(pool.as_ref())
+        .await
+    }
+
+
+    pub async fn join_channel(
+        channels: &Vec<Uuid>,
+        user_id: &Uuid,
+        pool: &Data<PgPool>
+    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+        sqlx::query!(
+            "
+            UPDATE users set channels = $1 WHERE user_id = $2 
+            ",
+            channels,
+            user_id
+        )
+        .execute(pool.as_ref())
+        .await
+    }
+
+
+    pub async fn update_user(
+        user_id: &Uuid,
+        icon: &String,
+        background: &String,
+        username: &String,
+        pool: &Data<PgPool>
+    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+        sqlx::query!(
+            "
+            UPDATE users SET icon = $1, background = $2, username = $3  WHERE user_id = $4
+            ",
+            icon,
+            background,
+            username,
+            user_id
+        )
+        .execute(pool.as_ref())
         .await
     }
 }

@@ -60,4 +60,34 @@ impl Channel {
     }
 
 
+    pub async fn join_user(
+        users: &Vec<Uuid>,
+        channel_id: &Uuid,
+        pool: &Data<PgPool>
+    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+        sqlx::query!(
+            "UPDATE channels SET users = $1 WHERE channel_id = $2",
+            users,
+            channel_id
+        )
+        .execute(pool.as_ref())
+        .await
+    }
+
+
+    pub async fn get_by_id(
+        channel_id: &Uuid,
+        pool: &Data<PgPool>,
+    ) -> Result<Channel, sqlx::Error> {
+        sqlx::query_as!(
+            Channel,
+            "SELECT * FROM channels WHERE channel_id = $1",
+            channel_id
+        )
+        .fetch_one(pool.as_ref())
+        .await
+    }
+
+
+
 }
