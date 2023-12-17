@@ -4,7 +4,7 @@ use crate::
     handlers::{
     auth::{register::reg, log_in::log_in, log_out::log_out},
     chat::{show_channels::show_channels, get_messages::get_messages, create_channel::create_channel, create_message::create_message, join_channel::join_channel, out_channel::out_channel},
-    ws::start_connection
+    ws::start_connection, profile::{get_me::get_me, update_me}
 };
     
 
@@ -34,6 +34,8 @@ scope("/api/v1")
             )
             .service(
         scope("/profile")
+                        .route("get_me", get().to(get_me))
+                        .route("update", post().to(update_me::update_me))
                     //
             )
             .service(
