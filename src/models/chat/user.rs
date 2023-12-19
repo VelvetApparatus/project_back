@@ -33,6 +33,7 @@ pub struct SearchUser {
 
 #[derive(Serialize, Deserialize, sqlx::FromRow)]
 pub struct StructForGetChannels {
+    channel_id: Option<Uuid>,
     channel_name: Option<String>,
     channel_img: Option<String>,
     message_body: Option<String>,
