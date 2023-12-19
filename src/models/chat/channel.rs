@@ -15,6 +15,16 @@ pub struct Channel {
 }
 
 #[derive(Serialize)]
+pub struct SearchChannel {
+    pub out_channel_id: Option<Uuid>,
+    pub out_channel_name: Option<String>,
+    pub out_users: Option<Vec<Uuid>>,
+    pub out_img: Option<String>,
+    pub out_last_message_id: Option<Uuid>,
+    // pub out_creator_id: Option<Uuid>
+}
+
+#[derive(Serialize)]
 pub struct StructForGetChannels {
     pub username: Option<String>,
     pub message_body: Option<String>,
@@ -87,7 +97,18 @@ impl Channel {
         .fetch_one(pool.as_ref())
         .await
     }
-
-
+    
+    pub async fn search(
+        search_text: &str,
+        pool: &Data<PgPool>
+    ) -> Result<Vec<SearchChannel>, sqlx::Error> {
+        sqlx::query_as!(
+            SearchChannel,
+            "SELECT * FROM search_channels($1)",
+            search_text
+        )
+        .fetch_all(pool.as_ref())
+        .await
+    }
 
 }

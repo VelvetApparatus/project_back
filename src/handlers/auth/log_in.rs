@@ -39,7 +39,6 @@ pub async fn log_in(
                                 .path("/")
                                 .finish()
                             )
-
                                 .json(new_uuid.to_string())
 
                         },

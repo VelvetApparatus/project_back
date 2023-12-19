@@ -4,7 +4,7 @@ use crate::
     handlers::{
     auth::{register::reg, log_in::log_in, log_out::log_out},
     chat::{show_channels::show_channels, get_messages::get_messages, create_channel::create_channel, create_message::create_message, join_channel::join_channel, out_channel::out_channel},
-    ws::start_connection, profile::{get_me::get_me, update_me}
+    ws::start_connection, profile::{get_me::get_me, update_me}, search::{search_channels::search_channels, search_users::search_users}
 };
     
 
@@ -41,6 +41,12 @@ scope("/api/v1")
             .service(
         scope("/stream")
                     .service(start_connection::start_connection)
+            )
+            .service(
+        scope("/search")
+                    .route("/users", get().to(search_users))
+                    .route("/channels", get().to(search_channels))
+
             )
     );
 }

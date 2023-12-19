@@ -20,6 +20,17 @@ pub struct User {
 
 }
 
+#[derive(Serialize)]
+pub struct SearchUser {
+    pub out_user_id: Option<Uuid>,
+    pub out_username: Option<String>,
+    pub out_image: Option<String>,
+    pub out_is_online: Option<bool>,
+    pub out_last_online: Option<chrono::NaiveDateTime>,
+    pub out_icon: Option<String>,
+    pub out_background: Option<String>,    
+}
+
 #[derive(Serialize, Deserialize, sqlx::FromRow)]
 pub struct StructForGetChannels {
     channel_name: Option<String>,
@@ -133,4 +144,19 @@ impl User {
         .execute(pool.as_ref())
         .await
     }
-}
+
+    pub async fn search(
+        search_text: &str,
+        pool: &Data<PgPool>   
+    ) -> Result<Vec<SearchUser>, sqlx::Error> {
+        sqlx::query_as!(
+            SearchUser,
+            "SELECT * FROM search_users($1)",
+            search_text
+        )
+        .fetch_all(pool.as_ref())
+        .await
+
+        
+    }
+}   
