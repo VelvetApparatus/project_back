@@ -125,6 +125,21 @@ impl User {
     }
 
 
+    pub async fn insert_channel(
+        channel_id: &Vec<Uuid>,
+        user_id: &Uuid,
+        pool: &Data<PgPool>
+    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+        sqlx::query!(
+            "UPDATE users
+            SET channels = channels || $1
+            WHERE user_id = $2;",
+            channel_id,
+            user_id
+        ).execute(pool.as_ref()).await
+    }
+
+
     pub async fn update_user(
         user_id: &Uuid,
         icon: &String,

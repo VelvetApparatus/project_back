@@ -55,14 +55,14 @@ impl Channel {
         users: Vec<Uuid>,
         creator_id: Uuid,
         channel_id: Uuid,
-        pool: Data<PgPool>,
+        pool: &Data<PgPool>,
         // img: Option<String>
     ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
         sqlx::query!(
             "INSERT INTO channels VALUES ($1, null, $2, $3, null, $4)",
             channel_id,
             name,
-            users.as_slice(),
+            &users,
             creator_id
         )
         .execute(pool.as_ref())

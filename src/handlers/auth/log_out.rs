@@ -7,6 +7,7 @@ pub async fn log_out() -> HttpResponse {
     HttpResponse::Ok()
     .cookie(
         Cookie::build("auth", "")
+        .path("/")
         .max_age(Duration::ZERO)
         .finish()
     )

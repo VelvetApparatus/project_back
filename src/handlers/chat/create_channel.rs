@@ -3,7 +3,7 @@ use serde::Deserialize;
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::{utils::cookie_checker::{CheckResult, check}, models::chat::channel::Channel};
+use crate::{utils::cookie_checker::{CheckResult, check}, models::chat::{channel::Channel, user::User}};
 
 
 #[derive(Debug, Deserialize)]
@@ -31,10 +31,16 @@ pub async fn create_channel(
                         body.users,
                         user.user_id.unwrap(),
                         channel_id.clone(),
-                        pool
+                        &pool
                         ).await {
-                        Ok(_) => HttpResponse::Ok().json(channel_id),
-                        Err(_) => HttpResponse::Conflict().finish()
+                        Err(_) => HttpResponse::Conflict().finish(),
+                        Ok(_) => {
+                            match User::insert_channel(&vec![channel_id], &user.user_id.unwrap(), &pool).await {
+                                Err(err) => HttpResponse::Conflict().json(err.to_string()),
+                                Ok(_) => HttpResponse::Ok().json(channel_id)
+                            }
+                        }
+                        // Ok(_) => HttpResponse::Ok().json(channel_id),
                     }
                 }
             }
