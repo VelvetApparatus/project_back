@@ -35,7 +35,11 @@ pub async fn log_in(
 
                             // Sending the Response
                             HttpResponse::Ok()
-                                .cookie(Cookie::new("auth", new_uuid.to_string()))
+                                .cookie(Cookie::build("auth", new_uuid.to_string())
+                                .path("/")
+                                .finish()
+                            )
+
                                 .json(new_uuid.to_string())
 
                         },
