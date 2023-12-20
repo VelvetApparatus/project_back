@@ -28,19 +28,20 @@ pub async fn create_channel(
                     body.users.push(user.user_id.unwrap());
                     match Channel::create(
                         body.name,
-                        body.users,
+                        body.users.clone(),
                         user.user_id.unwrap(),
                         channel_id.clone(),
                         &pool
                         ).await {
                         Err(_) => HttpResponse::Conflict().finish(),
                         Ok(_) => {
-                            match User::insert_channel(&vec![channel_id], &user.user_id.unwrap(), &pool).await {
-                                Err(err) => HttpResponse::Conflict().json(err.to_string()),
-                                Ok(_) => HttpResponse::Ok().json(channel_id)
+                            for usr in &body.users {
+                                if User::insert_channel(&vec![channel_id], usr, &pool).await.is_err(){
+                                    return HttpResponse::InternalServerError().finish()
+                                }
                             }
+                            return HttpResponse::Ok().json(channel_id)
                         }
-                        // Ok(_) => HttpResponse::Ok().json(channel_id),
                     }
                 }
             }

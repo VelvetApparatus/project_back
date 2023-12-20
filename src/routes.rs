@@ -34,8 +34,8 @@ scope("/api/v1")
             )
             .service(
         scope("/profile")
-                        .route("get_me", get().to(get_me))
-                        .route("update", post().to(update_me::update_me))
+                        .route("/get_me", get().to(get_me))
+                        .route("/update", post().to(update_me::update_me))
                     //
             )
             .service(
