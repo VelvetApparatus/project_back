@@ -1,29 +1,22 @@
-use actix_web::{HttpRequest, web::{Data, Json}, HttpResponse};
+use actix_web::{HttpRequest, web::{Data, Json, Query}, HttpResponse};
 use sqlx::PgPool;
 
 use crate::{models::chat::channel::Channel, utils::cookie_checker::{check, CheckResult}};
 
-use super::search_users::SearchBody;
-
-
+use super::search_users::SearchParams;
 
 pub async fn search_channels(
     request: HttpRequest,
     pool: Data<PgPool>,
-    body: Json<Option<SearchBody>>
+    params: Query<SearchParams>
 ) -> HttpResponse {
     match check(&pool, &request).await {
-        CheckResult::BadGateway=> HttpResponse::BadGateway().json("Coludn't get the current user"),
+        CheckResult::BadGateway => HttpResponse::BadGateway().json("Couldn't get the current user"),
         CheckResult::Unauthorized => HttpResponse::Unauthorized().json("Unauthorized"),
         CheckResult::Success(user) => {
-            match body.into_inner() {
-                None => HttpResponse::Conflict().json("Body is missing"),
-                Some(body) => {
-                     match Channel::search(&body.search_text, &pool).await {
-                        Err(err) => HttpResponse::Conflict().json(err.to_string()),
-                        Ok(value) => HttpResponse::Ok().json(value)
-                     }
-                }
+            match Channel::search(&params.search_text, &pool).await {
+                Err(err) => HttpResponse::Conflict().json(err.to_string()),
+                Ok(value) => HttpResponse::Ok().json(value)
             }
         }
     }

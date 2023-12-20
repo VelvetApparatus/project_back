@@ -35,9 +35,20 @@ pub struct SearchUser {
 pub struct StructForGetChannels {
     channel_id: Option<Uuid>,
     channel_name: Option<String>,
-    channel_img: Option<String>,
-    message_body: Option<String>,
+    last_message_id: Option<Uuid>,
+    last_message_text: Option<String>,
+    last_message_timestamp: Option<chrono::NaiveDateTime>,
+    channel_img: Option<String>
 }
+
+/*
+    channel_id UUID,
+    channel_name TEXT,
+    last_message_id UUID,
+    last_message_text TEXT,
+    last_message_timestamp TIMESTAMP,
+    channel_img TEXT
+*/
 impl User {
     
     
@@ -47,7 +58,7 @@ impl User {
     ) -> Result<Vec<StructForGetChannels>, sqlx::Error> {
         sqlx::query_as!(
             StructForGetChannels, 
-            "SELECT * FROM get_user_channels($1)",
+            "SELECT * FROM get_channel_data($1)",
             user_id
         )
         .fetch_all(pool.as_ref())
