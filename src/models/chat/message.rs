@@ -26,7 +26,7 @@ impl Message {
         message_id: &Uuid,
         channel_id: Uuid,
         body: String,
-        pool: Data<PgPool>
+        pool: &Data<PgPool>
     ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
         sqlx::query!(
             "Insert into messages Values ($1, $2, $3, $4, null, null, $5)",

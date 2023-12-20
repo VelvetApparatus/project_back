@@ -111,4 +111,14 @@ impl Channel {
         .await
     }
 
+
+    pub async fn update_last_message(
+        channel_id: &Uuid,
+        pool: &Data<PgPool>,
+        last_message: &Uuid,
+    ) -> Result<sqlx::postgres::PgQueryResult, sqlx::Error> {
+        sqlx::query!("UPDATE channels SET last_message_id = $1 WHERE channel_id = $2", last_message, channel_id)
+        .execute(pool.as_ref())
+        .await
+    }
 }

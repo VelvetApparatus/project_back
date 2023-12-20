@@ -37,7 +37,7 @@ pub async fn get_messages(
                         Ok(value) => {
                             HttpResponse::Ok().json(value)
                         },
-                        Err(_) => {HttpResponse::BadGateway().finish()}
+                        Err(err) => {HttpResponse::BadGateway().json(err.to_string())}
                     }
                 }
             }

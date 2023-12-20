@@ -3,7 +3,7 @@ use serde::Deserialize;
 use sqlx::PgPool;
 use uuid::Uuid;
 
-use crate::{models::chat::message::Message, utils::cookie_checker::{check, CheckResult}};
+use crate::{models::chat::{message::Message, channel::Channel}, utils::cookie_checker::{check, CheckResult}};
 
 #[derive(Deserialize)]
 pub struct SendMessageBody {
@@ -30,9 +30,14 @@ pub async fn create_message(
                         &id,
                         body.reciever, 
                         body.body, 
-                        pool
+                        &pool
                     ).await {
-                        Ok(_) => HttpResponse::Ok().json(id),
+                        Ok(_) => {
+                             match Channel::update_last_message(&body.reciever, &pool, &id).await {
+                                Ok(_) => HttpResponse::Ok().json(id),
+                                Err(err) => HttpResponse::InternalServerError().json(err.to_string())
+                             }
+                        },
                         Err(_) => HttpResponse::Conflict().finish()
                     }
                 }

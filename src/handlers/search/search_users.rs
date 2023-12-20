@@ -1,4 +1,4 @@
-use actix_web::{HttpRequest, web::{Json, Data, Query}, HttpResponse};
+use actix_web::{HttpRequest, web::{ Data, Query}, HttpResponse};
 use serde::Deserialize;
 use sqlx::PgPool;
 
@@ -17,7 +17,7 @@ pub async fn search_users(
     match check(&pool, &request).await {
         CheckResult::BadGateway => HttpResponse::BadGateway().json("Couldn't get the current user"),
         CheckResult::Unauthorized => HttpResponse::Unauthorized().json("Unauthorized"),
-        CheckResult::Success(user) => {
+        CheckResult::Success(_) => {
             match User::search(&params.search_text, &pool).await {
                 Err(err) => HttpResponse::Conflict().json(err.to_string()),
                 Ok(value) => HttpResponse::Ok().json(value)
