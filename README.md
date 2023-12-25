@@ -24,6 +24,7 @@ This documentation provides an overview of the backend API routes for the applic
 5. [Search](#search)
    - [Search Users](#search-users)
    - [Search Channels](#search-channels)
+6. [Setup](#setup)
 
 ## Authentication
 
@@ -175,12 +176,22 @@ This documentation provides an overview of the backend API routes for the applic
 - **Method:** `GET`
 - **Handler:** `search_users`
 - **QueryParams** search_text
-- Returns all users wich has a substring 'search_text'
+- Returns all users which has a substring 'search_text'
 
 ### Search Channels
 - **Route:** `/api/v1/search/channels`
 - **Method:** `GET`
 - **Handler:** `search_channels`
 - - **QueryParams** search_text
-- Returns all channels wich has a substring 'search_text'
+- Returns all channels which has a substring 'search_text'
+
+
+## Setup
+
+- In environment file you need to reinitiate `DATABASE_URL` variable
+- Install sqlx CLI 
+```bash
+sqlx migrate run
+cargo run 
+```
 
