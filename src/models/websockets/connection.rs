@@ -102,7 +102,6 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsConn {
             }
             Ok(ws::Message::Nop) => (),
             Ok(ws::Message::Text(s)) => {
-                // println!("UNSAFE START");
                 let x = serde_json::from_str::<ClientActorMessage>(&s);
                 match x {
                     Ok(value) => {
@@ -110,8 +109,6 @@ impl StreamHandler<Result<ws::Message, ws::ProtocolError>> for WsConn {
                     },
                     Err(e) => println!("{:?}", e)
                 }
-                // println!("UNSAFE STOP");
-
             },
             Err(e) => std::panic::panic_any(e),
         }

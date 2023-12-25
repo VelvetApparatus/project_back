@@ -35,7 +35,7 @@ async fn main() -> Result<(), std::io::Error>{
         .expect("DATABASE_URL must be set");
 
 
-    let allowed_origin = env::var("ALLOWED_ORIGIN")
+    let _allowed_origin = env::var("ALLOWED_ORIGIN")
         .expect("ALLOWED_ORIGIN must be set");
 
     

@@ -21,7 +21,7 @@ impl Default for Lobby {
 }
 
 impl Lobby {
-    fn send_message(&self, message: &Message, id_to: &Uuid) {
+    fn _send_message(&self, message: &Message, id_to: &Uuid) {
         if let Some(socket_recipient) = self.sessions.get(id_to) {
             let _ = socket_recipient
                 .do_send(
